@@ -21,3 +21,10 @@ Status: Complete (Verified)
 
 ### train_bert_from_scratch
 Status: WIP (need to test on Docker. Native environment on Mac is not in line with example)
+
+
+### text_generation_transformers
+Status: Complete (Verified)
+
+### text_classification_TF2
+Status: Not Started

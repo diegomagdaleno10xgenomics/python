@@ -12,7 +12,7 @@ Status: Not Started
 
 
 ### paraphrase_text_transformers
-Status: Not Started
+Status: Complete (Verified)
 
 
 ### text_summarization_transformers
@@ -25,6 +25,3 @@ Status: WIP (need to test on Docker. Native environment on Mac is not in line wi
 
 ### text_generation_transformers
 Status: Complete (Verified)
-
-### text_classification_TF2
-Status: Not Started

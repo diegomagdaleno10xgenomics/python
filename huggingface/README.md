@@ -8,7 +8,7 @@ Status: Complete (Verified)
 
 
 ### finetune_bert_for_classification
-Status: Not Started
+Status: WIP (Takes a very long time to train)
 
 
 ### paraphrase_text_transformers

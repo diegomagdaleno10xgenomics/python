@@ -25,3 +25,7 @@ Status: WIP (need to test on Docker. Native environment on Mac is not in line wi
 
 ### text_generation_transformers
 Status: Complete (Verified)
+
+
+### train_distilbert_from_scratch
+Status: Complete (Verified)

@@ -1,5 +1,6 @@
 # biggan.py
 # Download the biggan model from tensorflow hub and run it.
+# source: https://www.youtube.com/watch?v=JQQ-biNjzWQ
 # Tensorflow 2.7.0
 # Windows/MacOS/Linux
 # Python 3.7

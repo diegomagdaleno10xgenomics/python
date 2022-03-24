@@ -442,7 +442,7 @@ def main():
 	# minutes.
 	print("Loading vision and text encoders...")
 	vision_encoder = keras.models.load_model("vision_encoder")
-	text_encoder = keras.model.load_model("text_encoder")
+	text_encoder = keras.models.load_model("text_encoder")
 	print("Models are loaded.")
 
 	
@@ -460,9 +460,81 @@ def main():
 	)
 	print(f"Image embeddings shape: {image_embeddings.shape}.")
 
+
 	# Retrieve relevant images.
+	# In this example, we use exact matching by computing the dot product
+	# similarity between the input query embedding and the image
+	# embeddings, and retreive the top k matches. However, approximate
+	# similarity matching, using frameworks like ScaNN, Annoy, or Faiss is
+	# preferred in real-time use cases to scale with a large number of
+	# images.
+	def find_matches(image_embeddings, queries, k=9, normalize=True):
+		# Get the embedding for the query.
+		query_embedding = text_encoder(tf.convert_to_tensor(queries))
+
+		# Normalize the query and the image embeddings.
+		if normalize:
+			image_embeddings = tf.math.l2_normalize(image_embeddings, axis=1)
+			query_embedding = tf.math.l2_normalize(query_embedding, axis=1)
+
+		# Compute the dot product between the query and the image embeddings.
+		dot_similarity = tf.matmul(query_embedding, image_embeddings, transpose_b=True)
+		
+		# Retreive top k indices.
+		results = tf.math.top_k(dot_similarity, k).indices.numpy()
+		
+		# Return matching image paths.
+		return [[image_paths[idx] for idx in indices] for indices in results]
+
+	
+	# Set the query variable to the type of images you want to search for.
+	# Try things like "a plate of healthy food", "a woman wearing a hat is
+	# walking down a sidewalk", "a bird sits near the water", or "wild
+	# animals are standing in a field".
+	query = "a family standing next to the ocean on a sandy beach with a surf board"
+	matches = find_matches(image_embeddings, [query], normalize=True)[0]
+
+	plt.figure(figsize=(20, 20))
+	for i in range(9):
+		ax = plt.subplot(3, 3, i + 1)
+		plt.imshow(mpimg.imread(matches[i]))
+		plt.axis("off")
+
 
 	# Evaluate the retrieval quality
+	# To evaluate the dual encoder model, we use the captions as queries.
+	# We use the out-of-training sample images and captions to evaluate
+	# the retrieval quality, using top k accuracy. A true prediction is
+	# counted if, for a given caption, its associated image is retrieved
+	# within the top k matches.
+	def compute_top_k_accuracy(image_paths, k=100):
+		hits = 0
+		num_batches = int(np.ceil(len(image_paths) / batch_size))
+		for idx in tqdm(range(num_batches)):
+			start_idx = idx * batch_size
+			end_idx = start_idx + batch_size
+			current_image_paths = image_paths[start_idx:end_idx]
+			queries = [
+				image_path_to_caption[image_path][0] for image_path in current_image_paths
+			]
+			results = find_matches(image_embeddings, queries, k)
+			hits += sum(
+				[
+					image_path in matches
+					for (image_path, matches) in list(zip(current_image_paths, results))
+				]
+			)
+
+		return hits / len(image_paths)
+
+
+	print("Scoring training data...")
+	train_accuracy = compute_top_k_accuracy(train_image_paths)
+	print(f"Train accuracy: {round(train_accuracy * 100, 3)}%")
+
+	print("Scoring evaluation data...")
+	valid_accuracy = compute_top_k_accuracy(valid_image_paths[train_size:])
+	print(f"Eval accuracy: {round(valid_accuracy * 100, 3)}%")
 
 	# Final remarks
 	# You can obtain better results by increasing the size of the training

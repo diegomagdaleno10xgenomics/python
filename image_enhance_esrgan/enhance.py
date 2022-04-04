@@ -3,6 +3,10 @@
 # tensorflow hub. The ESRGAN from tensorflow hub was trained on the 
 # div2k dataset (on bicubically downsampled iamges) on image patches of
 # size 128 x 128.
+# Source: https://www.tensorflow.org/hub/tutorials/image_enhancing
+# Tensorflow 2.4.0
+# Windows/MacOS/Linux
+# Python 3.7
 
 
 import os
@@ -105,10 +109,9 @@ def main():
 			tf.cast(tf.clip_by_value(image, 0, 255), tf.uint8)
 		)
 
-		lr_image = np.asarray(
-			image.nump()\
-				.resize([image_size[0] // 4, image_size[1] // 4], Image.BICUBIC)
-		)
+		lr_image = np.asarray(Image.fromarray(image.numpy())\
+			.resize([image_size[0] // 4, image_size[1] // 4], Image.BICUBIC))
+		
 		lr_image = tf.expand_dims(lr_image, 0)
 		lr_image = tf.cast(lr_image, tf.float32)
 		return lr_image

@@ -1,0 +1,18 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Simple NodeJS API that uses a Tensorflow SavedModel for question answering.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Diego Magdaleno",
+  "license": "ISC",
+  "dependencies": {
+    "@tensorflow/tfjs": "^3.16.0",
+    "@tensorflow/tfjs-node": "^3.16.0",
+    "@tensorflow/tfjs-node-gpu": "^3.16.0",
+    "tokenizers": "^0.12.0"
+  }
+}
